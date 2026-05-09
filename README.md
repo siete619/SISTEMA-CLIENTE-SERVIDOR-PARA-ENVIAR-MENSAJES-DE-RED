@@ -24,6 +24,6 @@ Relacionar el funcionamiento del sistema con las capas del modelo OSI, identific
 Probar el sistema en un entorno de red local para verificar su correcto funcionamiento y detectar posibles mejoras.
 
 Stack tecnologico
-Lenguaje: Java
-Herramientas: Apache-Netbeans
+- Lenguaje: Java
+- Herramientas: Apache-Netbeans
 
