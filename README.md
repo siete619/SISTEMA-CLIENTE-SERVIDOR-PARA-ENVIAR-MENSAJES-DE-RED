@@ -22,3 +22,8 @@ Analizar el funcionamiento de los protocolos de comunicación involucrados, espe
 Observar y evaluar el tráfico de red generado por la aplicación mediante el uso de herramientas como Wireshark. 
 Relacionar el funcionamiento del sistema con las capas del modelo OSI, identificando el papel de cada una en el proceso de comunicación. 
 Probar el sistema en un entorno de red local para verificar su correcto funcionamiento y detectar posibles mejoras.
+
+Stack tecnologico
+Lenguaje: Java
+Herramientas: Apache-Netbeans
+
