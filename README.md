@@ -1,29 +1,34 @@
-# SISTEMA-CLIENTE-SERVIDOR-PARA-ENVIAR-MENSAJES-DE-RED
-Este repositorio es para el proyecto realizado por el equipo 1, perteneciente a la clase de Sistemas abiertos
+# Sistema Cliente-Servidor de Mensajería TCP/IP 🚀
 
-INSTITUTO TECNOLOGICO SUPERIOR DE POZA RICA
+![Java](https://img.shields.io/badge/Java-%23FD1D1D.svg?style=for-the-badge&logo=java&logoColor=white)
+![TCP/IP](https://img.shields.io/badge/Protocolo-TCP%2FIP-%23FD1D1D.svg?style=for-the-badge)
+![Tailscale](https://img.shields.io/badge/VPN-Tailscale-%23FD1D1D.svg?style=for-the-badge&logo=tailscale&logoColor=white)
+![Wireshark](https://img.shields.io/badge/Análisis-Wireshark-%23FD1D1D.svg?style=for-the-badge&logo=wireshark&logoColor=white)
 
-Equipo conformado por:
-- Ana Ruth Martinez Ramirez
-- Aaron Luna Gonzalez
-- Luis Enrique Cobos Galindo
+Este repositorio contiene la implementación práctica de un sistema de mensajería en red basado en la arquitectura **Cliente-Servidor**. Fue desarrollado como proyecto para la asignatura de Sistemas Abiertos, demostrando la aplicación empírica del modelo OSI y la suite de protocolos de Internet.
 
-8° Semestre
+## 📌 Descripción del Proyecto
 
-Docente: Ing. Salvador Mendoza Perez
+El sistema está desarrollado íntegramente en Java y utiliza **Sockets** para establecer un canal de comunicación bidireccional y confiable a través del puerto lógico `5000`. Superando las limitaciones de una red local (LAN), el proyecto fue desplegado y probado en un entorno distribuido real utilizando una Red Privada Virtual (VPN) para conectar equipos en diferentes redes Wi-Fi.
 
-Desarrollar un sistema cliente-servidor que permita la comunicación entre dispositivos mediante el envío y recepción de mensajes en una red, utilizando el lenguaje de programación Java y aplicando los principios del modelo de comunicación basado en la arquitectura cliente-servidor, así como los protocolos de la suite TCP/IP.
+## ✨ Características Principales
 
-Diseñar la arquitectura del sistema cliente-servidor, identificando los componentes principales y su funcionamiento dentro de una red. 
-Implementar un programa servidor capaz de recibir conexiones de uno o varios clientes mediante el uso de sockets. 
-Desarrollar una aplicación cliente que permita conectarse al servidor y enviar mensajes de forma eficiente. 
-Aplicar el uso de direcciones IP y puertos para establecer la comunicación entre los dispositivos en la red. 
-Analizar el funcionamiento de los protocolos de comunicación involucrados, especialmente TCP, en el intercambio de datos. 
-Observar y evaluar el tráfico de red generado por la aplicación mediante el uso de herramientas como Wireshark. 
-Relacionar el funcionamiento del sistema con las capas del modelo OSI, identificando el papel de cada una en el proceso de comunicación. 
-Probar el sistema en un entorno de red local para verificar su correcto funcionamiento y detectar posibles mejoras.
+* **Servidor Concurrente:** Implementación de programación multihilo (`Threads`) que permite al servidor aceptar y gestionar múltiples conexiones de clientes simultáneamente sin bloquear la ejecución.
+* **Comunicación Confiable:** Uso estricto del protocolo TCP para garantizar la entrega íntegra y ordenada de los paquetes de datos.
+* **Validación Empírica:** El tráfico del sistema fue interceptado y analizado con Wireshark, comprobando en tiempo real el *Three-way handshake* (SYN, SYN-ACK, ACK) y la transmisión del payload en texto plano.
+* **Gestión de Sesiones:** Sistema de ingreso por nombre de usuario y cierre limpio de conexiones mediante el comando de escape `/salir`.
 
-Stack tecnologico
-- Lenguaje: Java
-- Herramientas: Apache-Netbeans
+## 🛠️ Tecnologías y Herramientas
+
+* **Lenguaje:** Java (JDK)
+* **Entorno de Desarrollo:** Apache NetBeans
+* **Redes y Enrutamiento:** Tailscale (Overlay Network / VPN)
+* **Análisis de Tráfico:** Wireshark
+
+## 👨‍💻 Autores e Institución
+
+Proyecto desarrollado en el **Instituto Tecnológico Superior de Poza Rica (ITSPR)** por:
+* Aaron Luna Gonzalez
+* Luis Enrique Cobos Galindo
+* Ana Ruth Martinez Ramirez
 
