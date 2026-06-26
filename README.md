@@ -11,6 +11,16 @@ Este repositorio contiene la implementación práctica de un sistema de mensajer
 
 El sistema está desarrollado íntegramente en Java y utiliza **Sockets** para establecer un canal de comunicación bidireccional y confiable a través del puerto lógico `5000`. Superando las limitaciones de una red local (LAN), el proyecto fue desplegado y probado en un entorno distribuido real utilizando una Red Privada Virtual (VPN) para conectar equipos en diferentes redes Wi-Fi.
 
+## 📁 Estructura del Proyecto
+└── src/
+    └── main/
+        └── java/
+            └── com/              
+                ├── Servidor.java  
+                └── Cliente.java   
+Componente Servidor (Servidor.java):  Clase Servidor: Inicia el ServerSocket en el puerto lógico 5000 y mantiene un bucle activo (while(true)) esperando conexiones entrantes mediante .accept(). Almacena de forma sincronizada los flujos de salida de los usuarios conectados (Set<PrintWriter>)
+Clase Cliente: Configura la dirección IP virtual proporcionada por Tailscale (100.x.x.x) y se conecta al puerto 5000 mediante un objeto Socket. Ejecuta la interfaz de consola, solicita el nombre de usuario y mantiene el bucle principal de escritura en consola para mandar los mensajes hacia el servidor
+
 ## ✨ Características Principales
 
 * **Servidor Concurrente:** Implementación de programación multihilo (`Threads`) que permite al servidor aceptar y gestionar múltiples conexiones de clientes simultáneamente sin bloquear la ejecución.
@@ -28,7 +38,7 @@ El sistema está desarrollado íntegramente en Java y utiliza **Sockets** para e
 ## 👨‍💻 Autores e Institución
 
 Proyecto desarrollado en el **Instituto Tecnológico Superior de Poza Rica (ITSPR)** por:
-* Aaron Luna Gonzalez 22isic136
-* Luis Enrique Cobos Galindo 22isic138
-* Ana Ruth Martinez Ramirez 22isic148
+* Aaron Luna Gonzalez 22ISIC136
+* Luis Enrique Cobos Galindo 22ISIC138
+* Ana Ruth Martinez Ramirez 22ISIC148
 
