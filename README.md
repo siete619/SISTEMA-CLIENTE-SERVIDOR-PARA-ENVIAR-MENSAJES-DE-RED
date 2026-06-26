@@ -1,4 +1,4 @@
-# Sistema Cliente-Servidor de Mensajería TCP/IP 🚀
+# Sistema Cliente-Servidor de Mensajería TCP/IP 
 
 ![Java](https://img.shields.io/badge/Java-%23FD1D1D.svg?style=for-the-badge&logo=java&logoColor=white)
 ![TCP/IP](https://img.shields.io/badge/Protocolo-TCP%2FIP-%23FD1D1D.svg?style=for-the-badge)
@@ -28,7 +28,7 @@ El sistema está desarrollado íntegramente en Java y utiliza **Sockets** para e
 ## 👨‍💻 Autores e Institución
 
 Proyecto desarrollado en el **Instituto Tecnológico Superior de Poza Rica (ITSPR)** por:
-* Aaron Luna Gonzalez
-* Luis Enrique Cobos Galindo
-* Ana Ruth Martinez Ramirez
+* Aaron Luna Gonzalez 22isic136
+* Luis Enrique Cobos Galindo 22isic138
+* Ana Ruth Martinez Ramirez 22isic148
 
