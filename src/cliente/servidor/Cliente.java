@@ -1,80 +1,55 @@
-package cliente.servidor;
-
 import java.io.*;
 import java.net.*;
 import java.util.Scanner;
 
 public class Cliente {
-
-    // Dirección IP del servidor
-    private static final String HOST = "localhost";
-
-    // Puerto del servidor
+    // Dirección IP privada y número de puerto a utilizar [cite: 51, 90]
+    private static final String IP_SERVIDOR = "100.111.142.111"; // Cambiar por la IP del equipo servidor en la red local
     private static final int PUERTO = 5000;
 
     public static void main(String[] args) {
+        // Interfaz por consola [cite: 50]
+        System.out.println("Intentando conectar al servidor en " + IP_SERVIDOR + ":" + PUERTO);
 
-        Scanner teclado = new Scanner(System.in);
+        // Se inicializa el socket del cliente para establecer la conexión [cite: 102]
+        try (Socket socket = new Socket(IP_SERVIDOR, PUERTO);
+             BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+             PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
+             Scanner scanner = new Scanner(System.in)) {
 
-        System.out.println("=================================");
-        System.out.println(" CLIENTE TCP ");
-        System.out.println("=================================");
+            System.out.println("¡Conexión TCP establecida con éxito!");
+              // --- NUEVO: Pedir el nombre antes de empezar a chatear ---
+            System.out.print("Por favor, ingresa tu nombre de usuario: ");
+            String miNombre = scanner.nextLine();
+            out.println(miNombre); // Enviamos el nombre como el primer dato al servidor
+                       
+            System.out.println("Escribe tus mensajes. Escribe '/salir' para desconectarte.");
 
-        try (
+            // Hilo dedicado a leer constantemente las respuestas que envía el servidor
+            Thread hiloLectura = new Thread(() -> {
+                String mensajeEntrante;
+                try {
+                    while ((mensajeEntrante = in.readLine()) != null) {
+                        System.out.println("\n" + mensajeEntrante);
+                    }
+                } catch (IOException e) {
+                    System.out.println("\nSe ha cerrado la conexión con el servidor.");
+                }
+            });
+            hiloLectura.start();
 
-            // Conectar al servidor
-            Socket socket = new Socket(HOST, PUERTO);
-
-            BufferedReader entrada =
-                    new BufferedReader(
-                            new InputStreamReader(socket.getInputStream()));
-
-            PrintWriter salida =
-                    new PrintWriter(socket.getOutputStream(), true);
-
-        ) {
-
-            System.out.println("Conexion establecida.");
-            System.out.println("Servidor: " + HOST);
-            System.out.println("Puerto: " + PUERTO);
-
-            // Mostrar mensaje del servidor
-            System.out.println("Servidor dice: "
-                    + entrada.readLine());
-
-            String mensaje;
-
+            // Bucle principal para enviar mensajes de texto al servidor [cite: 50]
             while (true) {
-
-                System.out.print("\nEscribe un mensaje: ");
-                mensaje = teclado.nextLine();
-
-                // Enviar mensaje
-                salida.println(mensaje);
-
-                // Si escribe salir
-                if (mensaje.equalsIgnoreCase("salir")) {
-
-                    System.out.println("Conexion cerrada.");
+                String mensaje = scanner.nextLine();
+                out.println(mensaje);
+                
+                // Aplicación de comandos especiales [cite: 57]
+                if (mensaje.equalsIgnoreCase("/salir")) {
                     break;
                 }
-
-                // Leer respuesta
-                String respuesta = entrada.readLine();
-
-                System.out.println("Servidor responde: "
-                        + respuesta);
             }
-
-        } catch (UnknownHostException e) {
-
-            System.out.println("No se encontro el servidor.");
-
         } catch (IOException e) {
-
-            System.out.println("Error de conexion: " + e.getMessage());
+            System.err.println("No se pudo conectar al servidor. Verifica que esté en ejecución o que la IP sea correcta.");
         }
-
-        teclado.close();
     }
 }

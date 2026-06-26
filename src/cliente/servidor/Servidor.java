@@ -1,132 +1,93 @@
-package cliente.servidor;
-
 import java.io.*;
 import java.net.*;
 import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.*;
 
 public class Servidor {
-
-    // Puerto de comunicación
-    private static final int PUERTO = 5000;
+    // Definimos el puerto lógico por encima del 1024 [cite: 51, 94]
+    private static final int PUERTO = 5000; 
+    
+    // Lista sincronizada para guardar los flujos de salida de cada cliente conectado
+    private static Set<PrintWriter> escritoresClientes = new HashSet<>();
 
     public static void main(String[] args) {
-
-        System.out.println("=================================");
-        System.out.println(" SERVIDOR TCP INICIADO ");
-        System.out.println("=================================");
-
-        try (ServerSocket servidor = new ServerSocket(PUERTO)) {
-
-            // Mostrar información del servidor
-            System.out.println("Puerto utilizado: " + PUERTO);
-            System.out.println("IP del servidor: " + InetAddress.getLocalHost().getHostAddress());
-            System.out.println("Esperando conexiones...\n");
-
-            // El servidor queda escuchando siempre
+        System.out.println("Iniciando el servidor de mensajería TCP...");
+        
+        // Creamos el socket "oyente" [cite: 100]
+        try (ServerSocket listener = new ServerSocket(PUERTO)) {
+            System.out.println("Servidor a la escucha en el puerto " + PUERTO);
+            
             while (true) {
+                // El servidor se queda esperando conexiones [cite: 100]
+                Socket socketCliente = listener.accept(); 
+                
+                String fechaHora = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+                // Mostramos logs con fecha y hora [cite: 57]
+                System.out.println("[" + fechaHora + "] Nuevo cliente conectado desde IP: " + socketCliente.getInetAddress());
 
-                // Espera conexión del cliente
-                Socket cliente = servidor.accept();
-
-                System.out.println("=================================");
-                System.out.println(" NUEVO CLIENTE CONECTADO ");
-                System.out.println("IP Cliente: " + cliente.getInetAddress());
-                System.out.println("Puerto Cliente: " + cliente.getPort());
-                System.out.println("Hora: " + obtenerHora());
-                System.out.println("=================================\n");
-
-                // Crear hilo para atender cliente
-                HiloCliente hilo = new HiloCliente(cliente);
-                hilo.start();
+                // Delegamos la conexión de este cliente a un nuevo Hilo (Thread) [cite: 108]
+                new Thread(new ManejadorCliente(socketCliente)).start();
             }
-
         } catch (IOException e) {
-
-            System.out.println("Error en el servidor: " + e.getMessage());
+            System.err.println("Error en el servidor: " + e.getMessage());
         }
     }
 
-    // Método para obtener hora actual
-    public static String obtenerHora() {
+    // Clase interna que implementa la concurrencia para atender a múltiples clientes [cite: 106]
+    private static class ManejadorCliente implements Runnable {
+        private Socket socket;
+        private PrintWriter out;
+        private BufferedReader in;
 
-        SimpleDateFormat formato = new SimpleDateFormat("HH:mm:ss");
-        return formato.format(new Date());
-    }
-}
-
-// Clase para manejar múltiples clientes
-class HiloCliente extends Thread {
-
-    private Socket socket;
-
-    public HiloCliente(Socket socket) {
-
-        this.socket = socket;
-    }
-
-    @Override
-    public void run() {
-
-        try (
-
-            BufferedReader entrada =
-                    new BufferedReader(
-                            new InputStreamReader(socket.getInputStream()));
-
-            PrintWriter salida =
-                    new PrintWriter(socket.getOutputStream(), true);
-
-        ) {
-
-            // Mensaje inicial
-            salida.println("Conexion establecida con el servidor.");
-
-            String mensaje;
-
-            // Leer mensajes continuamente
-            while ((mensaje = entrada.readLine()) != null) {
-
-                // Validar mensaje vacío
-                if (mensaje.trim().isEmpty()) {
-
-                    salida.println("No se permiten mensajes vacios.");
-                    continue;
-                }
-
-                // Comando para salir
-                if (mensaje.equalsIgnoreCase("salir")) {
-
-                    System.out.println("Cliente desconectado: "
-                            + socket.getInetAddress());
-
-                    salida.println("Conexion finalizada.");
-                    break;
-                }
-
-                // Mostrar mensaje recibido
-                System.out.println("[" + Servidor.obtenerHora() + "] "
-                        + socket.getInetAddress()
-                        + " dice: " + mensaje);
-
-                // Respuesta al cliente
-                salida.println("Servidor recibio correctamente el mensaje: "
-                        + mensaje);
-            }
-
-        } catch (IOException e) {
-
-            System.out.println("Cliente desconectado inesperadamente.");
+        public ManejadorCliente(Socket socket) {
+            this.socket = socket;
         }
 
-        // Cerrar socket
-        try {
+        public void run() {
+            try {
+                // Obtenemos los flujos de entrada y salida de datos [cite: 103]
+                in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                out = new PrintWriter(socket.getOutputStream(), true);
 
-            socket.close();
+                synchronized (escritoresClientes) {
+                    escritoresClientes.add(out);
+                }
 
-        } catch (IOException e) {
+                String mensaje;
+                // El protocolo TCP garantiza la entrega ordenada y fiable de estos mensajes [cite: 52, 85]
+                while ((mensaje = in.readLine()) != null) {
+                    String fechaHora = new SimpleDateFormat("HH:mm:ss").format(new Date());
 
-            System.out.println("Error al cerrar conexion.");
+                    // Validación del comando especial para cerrar la sesión ordenadamente [cite: 57, 113]
+                    if (mensaje.equalsIgnoreCase("/salir")) {
+                        break; 
+                    }
+
+                    System.out.println("[" + fechaHora + "] MI BEBE: " + mensaje);
+                    
+                    // Retransmitimos el mensaje a todos los clientes conectados
+                    synchronized (escritoresClientes) {
+                        for (PrintWriter escritor : escritoresClientes) {
+                            escritor.println("[" + fechaHora + "] Cliente dice: " + mensaje);
+                        }
+                    }
+                }
+            } catch (IOException e) {
+                System.err.println("Conexión interrumpida con un cliente.");
+            } finally {
+                // Control de errores y cierre limpio de conexiones [cite: 57]
+                if (out != null) {
+                    synchronized (escritoresClientes) {
+                        escritoresClientes.remove(out);
+                    }
+                }
+                try {
+                    socket.close();
+                    System.out.println("Un cliente se ha desconectado.");
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 }
